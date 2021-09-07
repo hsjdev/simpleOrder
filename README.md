@@ -444,8 +444,8 @@ kubectl create -f deployment.yml
 ```
 cd ..
 cd  SimpleOrder
-docker build -t team04acr.azurecr.io/simpleorder:v1 .
-docker push team04acr.azurecr.io/simpleorder:v1
+docker build -t user21.azurecr.io/simpleorder:v1 .
+docker push user21.azurecr.io/simpleorder:v1
 ```
 ![image](https://user-images.githubusercontent.com/49510466/131075585-a8a4d4df-3fe8-4c5e-81fb-46e7e91686b6.png)
 
@@ -474,7 +474,7 @@ spec:
     spec:
       containers:
         - name: simpleorder
-          image: team04acr.azurecr.io/simpleorder:v1
+          image: user21.azurecr.io/simpleorder:v1
           ports:
             - containerPort: 8080
           env:
@@ -483,6 +483,7 @@ spec:
                 configMapKeyRef:
                   name: apiurl
                   key: url
+
 ```	  
 - deploy 완료
 
@@ -527,7 +528,7 @@ spec:
 - ConfigMap 생성
 
 ```
-kubectl create configmap apiurl --from-literal=url=http://10.0.170.241:8080 -n tutorial
+kubectl create configmap apiurl --from-literal=url=http://10.0.185.189:8080 -n tutorial 
 ```
 
 
@@ -555,8 +556,9 @@ kubectl autoscale deploy store --min=1 --max=10 --cpu-percent=15 -n tutorial
 ```
 - siege를 활용해서 워크로드를 2분간 걸어준다. (Cloud 내 siege pod에서 부하줄 것)
 ```
-kubectl exec -it pod/siege -c siege -n tutorial -- /bin/bash
-siege -c100 -t120S -r10 -v --content-type "application/json" 'http://10.0.88.201:8080/stores POST {"orderId": 111, "userId": "user10", "menuId": "menu10", "qty":10}'
+kubectl exec -it siege -c siege -- /bin/bash 
+root@siege:/# siege -c100 -t60S -r10 -v --content-type "application/json" 'http://20.200.207.107:8080/stores POST {"orderId": 111, "userId": "user10", "menuId": "menu10", "qty":10}'
+
 ```
 ![image](https://user-images.githubusercontent.com/49510466/131079991-3cee4245-9d39-4e50-83ff-d49cee4aad34.png)
 - 오토스케일 모니터링을 걸어 스케일 아웃이 자동으로 진행됨을 확인한다.
