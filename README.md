@@ -374,7 +374,7 @@ git clone https://github.com/hyeonwoos/simpleOrder.git
 ```
 - Build 하기
 ```
-cd /team04
+cd /simpleOrder
 cd gateway
 mvn package
 
@@ -398,39 +398,46 @@ mvn package
 - Docker Image Push/deploy/서비스생성
 ```
 cd gateway
-docker build -t team04acr.azurecr.io/gateway:v1 .
-docker push team04acr.azurecr.io/gateway:v1
+docker build -t user21.azurecr.io/gateway:v1 .
+docker images
+docker push user21.azurecr.io/gateway:v1
 
+cd kubernetes
 kubectl create ns tutorial
-kubectl create deploy gateway --image=team04acr.azurecr.io/gateway:v1 -n tutorial
-kubectl expose deploy gateway --type=ClusterIP --port=8080 -n tutorial
-
-kubectl create deploy simpleorder --image=team04acr.azurecr.io/simpleorder:v1 -n tutorial
-kubectl expose deploy simpleorder --type=ClusterIP --port=8080 -n tutorial
+kubectl create -f service.yaml
+kubectl create -f deployment.yml
 
 cd ..
 cd Payment
-docker build -t team04acr.azurecr.io/payment:v1 .
-docker push team04acr.azurecr.io/payment:v1
+docker build -t user21.azurecr.io/payment:v1 .
+docker images
+docker push user21.azurecr.io/payment:v1
 
-kubectl create deploy payment --image=team04acr.azurecr.io/payment:v1 -n tutorial
-kubectl expose deploy payment --type=ClusterIP --port=8080 -n tutorial
+kubectl create -f service.yaml
+kubectl get all -n tutorial (payment IP 10.0.185.189 확인)
+kubectl create configmap apiurl --from-literal=url=http://10.0.185.189:8080 -n tutorial
+kubectl create -f deployment.yml
+
 
 cd ..
 cd Store
-docker build -t team04acr.azurecr.io/store:v1 .
-docker push team04acr.azurecr.io/store:v1
+docker build -t user21.azurecr.io/store:v1 .
+docker images
+docker push user21.azurecr.io/store:v1
 
-kubectl create deploy store --image=team04acr.azurecr.io/store:v1 -n tutorial
-kubectl expose deploy store --type=ClusterIP --port=8080 -n tutorial
+kubectl create -f service.yaml
+kubectl create -f deployment.yml
 
 cd ..
 cd SimpleOrderHome
-docker build -t team04acr.azurecr.io/simpleorderhome:v1 .
-docker push team04acr.azurecr.io/simpleorderhome:v1
 
-kubectl create deploy simpleorderhome --image=team04acr.azurecr.io/simpleorderhome:v1 -n tutorial
-kubectl expose deploy simpleorderhome --type=ClusterIP --port=8080 -n tutorial
+docker build -t user21.azurecr.io/simpleorderhome:v1 .
+docker images
+docker push user21.azurecr.io/simpleorderhome:v1
+
+kubectl create -f service.yaml
+kubectl create -f deployment.yml
+
 ```
 
 - yml파일 이용한 deploy
